@@ -1,0 +1,134 @@
+---
+
+#############
+# Basic Setup
+#############
+
+- name: Set slapd debconf - password1
+  debconf:
+    name: slapd
+    question: slapd/password1
+    value: "{{ openldap_rootpw }}"
+    vtype: password
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Set slapd debconf - password2
+  debconf:
+    name: slapd
+    question: slapd/password2
+    value: "{{ openldap_rootpw }}"
+    vtype: password
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Set slapd debconf - domain
+  debconf:
+    name: slapd
+    question: slapd/domain
+    value: "{{ openldap_FQDN }}"
+    vtype: string
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Set slapd debconf - organization
+  debconf:
+    name: slapd
+    question: shared/organization
+    value: "{{ openldap_o }}"
+    vtype: string
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Set slapd debconf - database type
+  debconf:
+    name: slapd
+    question: slapd/backend
+    value: MDB
+    vtype: select
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Set slapd debconf - purge_database type
+  debconf:
+    name: slapd
+    question: slapd/purge_database
+    value: true
+    vtype: boolean
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Set slapd debconf - move_old_database
+  debconf:
+    name: slapd
+    question: slapd/move_old_database
+    value: false
+    vtype: boolean
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Reconfigure slapd
+  command: dpkg-reconfigure -f noninteractive slapd
+  notify: Restart slapd
+  become: true
+
+#############
+# MemberOf Setup
+#############
+
+- name: Create Tmp File
+  template:
+    src: templates/memberof_config1.ldif.j2
+    dest: "{{ openldap_tmpldif }}"
+
+- name: Apply MemberOf Settings
+  become: yes
+  command: ldapadd -Q -Y EXTERNAL -H ldapi:/// -f {{ openldap_tmpldif }}
+
+- name: Delete Tmp File
+  file:
+    path: "{{ openldap_tmpldif }}"
+    state: absent
+
+- name: Create Tmp File
+  template:
+    src: templates/memberof_config2.ldif.j2
+    dest: "{{ openldap_tmpldif }}"
+
+- name: Apply MemberOf Settings
+  become: yes
+  command: ldapadd -Q -Y EXTERNAL -H ldapi:/// -f {{ openldap_tmpldif }}
+
+- name: Delete Tmp File
+  file:
+    path: "{{ openldap_tmpldif }}"
+    state: absent
+
+
+#############
+# Refined
+#############
+
+- name: Create Tmp File
+  template:
+    src: templates/refint1.ldif.j2
+    dest: "{{ openldap_tmpldif }}"
+
+- name: Apply Refined Settings
+  become: yes
+  command: ldapmodify -Q -Y EXTERNAL -H ldapi:/// -f {{ openldap_tmpldif }}
+
+- name: Delete Tmp File
+  file:
+    path: "{{ openldap_tmpldif }}"
+    state: absent
+
+
+- name: Create Tmp File
+  template:
+    src: templates/refint2.ldif.j2
+    dest: "{{ openldap_tmpldif }}"
+
+- name: Apply Refined Settings
+  become: yes
+  command: ldapadd -Q -Y EXTERNAL -H ldapi:/// -f {{ openldap_tmpldif }}
+
+- name: Delete Tmp File
+  file:
+    path: "{{ openldap_tmpldif }}"
+    state: absent
+
+...

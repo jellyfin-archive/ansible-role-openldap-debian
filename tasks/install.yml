@@ -1,0 +1,20 @@
+---
+- name: Install packages
+  apt:
+    name: "{{ openldap_debian_packages }}"
+    state: present
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+
+- name: Setup Firewall
+  ufw:
+    rule: allow
+    port: ldap
+    log: yes
+  when: openldap_public == true and (ansible_distribution == 'Centos' or ansible_distribution == 'Ubuntu')
+
+- name: Start service
+  systemd:
+    name: "slapd"
+    state: started
+    enabled: yes
+...

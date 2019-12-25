@@ -1,0 +1,10 @@
+---
+- name: Modify Group - {{ item | first }}
+  ldap_entry:
+    dn: cn={{ item | first }}, ou=groups,{{ openldap_domain }}
+    bind_dn: cn=admin,{{ openldap_domain }}
+    bind_pw: "{{ openldap_rootpw }}"
+    objectClass: groupOfNames
+    state: present
+    attributes: "{{ item.attributes }}"
+

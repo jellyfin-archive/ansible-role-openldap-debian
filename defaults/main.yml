@@ -1,0 +1,49 @@
+---
+openldap_public: no
+
+# Domain
+openldap_FQDN: www.example.com
+openldap_domain: dc=example,dc=org
+openldap_dc: example
+openldap_o: example org
+
+# Root PW
+openldap_rootpw: ChangeMe
+
+# OUs
+openldap_ous:
+- people
+- groups
+- machineaccounts
+
+# Groups
+openldap_groups:
+- database:
+  attributes:
+    description: All database Users
+    member: uid=example,ou=users,{{ openldap_domain}}
+- accounting:
+  attributes:
+    description: All accounting Users
+    member: uid=kolab-service,ou=machineaccounts,{{ openldap_domain}}
+
+# Users
+openldap_users:
+- dn: uid=kolab-service,ou=machineaccounts,{{ openldap_domain}}
+  objectClass:
+  - inetOrgPerson
+  userPassword: ChangeMe 
+  attributes:
+    cn: kolab-service
+    sn: kolab
+    description: kolab descr
+
+- dn: uid=example,ou=users,{{ openldap_domain}}
+  objectClass:
+  - inetOrgPerson
+  userPassword: ChangeMe
+  attributes:
+    cn: example
+    sn: example
+    description: example descr
+    givenName: Test

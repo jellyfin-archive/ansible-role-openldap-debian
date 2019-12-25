@@ -1,0 +1,24 @@
+---
+galaxy_info:                   
+  author: TiedToAStar
+  company:       
+  description: OpenLDAP Setup
+  role_name: openldap
+  min_ansible_version: 2.4
+  license: GPLv3
+  platforms:
+    - name: Debian
+      versions:
+        - stretch
+        - buster
+    - name: Ubuntu
+      versions:
+        - bionic
+        - cosmic
+        - disco
+        - eoan
+  galaxy_tags:
+  - openldap
+  - ldap
+
+dependencies: []
