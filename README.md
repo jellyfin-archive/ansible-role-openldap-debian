@@ -39,7 +39,7 @@ None
   hosts: all
   become: true
   roles:
-    - role: tiedtoastar.openldap-debian
+    - role: tiedtoastar.openldap
       openldap_is_setup: false
       openldap_FQDN: example.com
       openldap_domain: dc=example,dc=com
